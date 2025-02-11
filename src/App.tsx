@@ -9,8 +9,10 @@ import Contact from './pages/Contact';
 import LaunchApp from './pages/LaunchApp';
 import Team from './pages/Team';
 import Blog from './pages/Blog';
+import BlogAdmin from './pages/BlogAdmin';
 import NotFound from './pages/NotFound';
 import Preloader from './components/Preloader';
+import ChatBot from './components/ChatBot';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,13 @@ function App() {
         <AnimatePresence>
           {loading && <Preloader />}
         </AnimatePresence>
-        <Navbar />
+        
+        {/* Only show Navbar if not in admin routes */}
+        <Routes>
+          <Route path="/blog/admin/*" element={null} />
+          <Route path="*" element={<Navbar />} />
+        </Routes>
+
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -35,12 +43,21 @@ function App() {
             <Route path="/team" element={<Team />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/admin/*" element={<BlogAdmin />} />
             <Route path="/launch-app" element={<LaunchApp />} />
             <Route path="/404" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
         </main>
-        <Footer />
+
+        {/* Only show Footer if not in admin routes */}
+        <Routes>
+          <Route path="/blog/admin/*" element={null} />
+          <Route path="*" element={<Footer />} />
+        </Routes>
+
+        {/* ChatBot */}
+        <ChatBot />
       </div>
     </Router>
   );

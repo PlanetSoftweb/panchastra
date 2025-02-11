@@ -1,49 +1,22 @@
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from '../firebase';
 
-const blogPosts = [
-  {
-    id: 1,
-    title: "The Future of Architectural Visualization",
-    excerpt: "Exploring how AR and VR are revolutionizing the way we design and experience spaces.",
-    image: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=800&auto=format&fit=crop&q=60",
-    category: "Technology",
-    date: "Feb 28, 2024",
-    readTime: "5 min read",
-    author: {
-      name: "Dr. Sarah Chen",
-      role: "VR Research Lead",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=60"
-    }
-  },
-  {
-    id: 2,
-    title: "AI in Architecture: Beyond the Basics",
-    excerpt: "How artificial intelligence is transforming architectural design and decision-making.",
-    image: "https://images.unsplash.com/photo-1525498128493-380d1990a112?w=800&auto=format&fit=crop&q=60",
-    category: "AI & ML",
-    date: "Feb 25, 2024",
-    readTime: "7 min read",
-    author: {
-      name: "Alex Kumar",
-      role: "AI Architect",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=60"
-    }
-  },
-  {
-    id: 3,
-    title: "Real-time Collaboration in Virtual Spaces",
-    excerpt: "Breaking down barriers with immersive collaborative environments.",
-    image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&auto=format&fit=crop&q=60",
-    category: "Collaboration",
-    date: "Feb 22, 2024",
-    readTime: "6 min read",
-    author: {
-      name: "Maya Patel",
-      role: "UX Researcher",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop&q=60"
-    }
-  }
-];
+interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  category: string;
+  date: any;
+  readTime: string;
+  author: {
+    name: string;
+    role: string;
+    avatar: string;
+  };
+}
 
 const categories = [
   "All",
@@ -55,6 +28,34 @@ const categories = [
 ];
 
 function Blog() {
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        const q = query(collection(db, 'blogs'), orderBy('date', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const posts = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as BlogPost[];
+        setBlogPosts(posts);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
+  }, []);
+
+  const filteredPosts = selectedCategory === "All"
+    ? blogPosts
+    : blogPosts.filter(post => post.category === selectedCategory);
+
   return (
     <div>
       {/* Hero Section */}
@@ -97,10 +98,11 @@ function Blog() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-                    index === 0 
+                    category === selectedCategory
                       ? 'bg-primary text-white' 
                       : 'bg-white/5 text-gray-300 hover:bg-white/10'
                   }`}
+                  onClick={() => setSelectedCategory(category)}
                 >
                   {category}
                 </motion.button>
@@ -108,92 +110,108 @@ function Blog() {
             </div>
           </motion.div>
 
-          {/* Featured Post */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-16"
-          >
-            <div className="glass-card overflow-hidden">
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="relative h-64 lg:h-auto">
-                  <img
-                    src={blogPosts[0].image}
-                    alt={blogPosts[0].title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-8 lg:p-12">
-                  <span className="text-primary text-sm font-semibold">{blogPosts[0].category}</span>
-                  <h2 className="text-2xl sm:text-3xl font-bold mt-2 mb-4">{blogPosts[0].title}</h2>
-                  <p className="text-gray-400 mb-6">{blogPosts[0].excerpt}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <img
-                        src={blogPosts[0].author.avatar}
-                        alt={blogPosts[0].author.name}
-                        className="w-10 h-10 rounded-full"
-                      />
-                      <div>
-                        <p className="font-medium">{blogPosts[0].author.name}</p>
-                        <p className="text-sm text-gray-400">{blogPosts[0].author.role}</p>
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-400">
-                      <p>{blogPosts[0].date}</p>
-                      <p>{blogPosts[0].readTime}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Blog Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.slice(1).map((post, index) => (
+          {loading ? (
+            <div className="text-center py-20">
               <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="glass-card overflow-hidden group"
-              >
-                <div className="relative h-48">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                  <div className="absolute bottom-4 left-4">
-                    <span className="px-3 py-1 bg-primary/90 text-white text-xs font-medium rounded-full">
-                      {post.category}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2">{post.title}</h3>
-                  <p className="text-gray-400 text-sm mb-4">{post.excerpt}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <img
-                        src={post.author.avatar}
-                        alt={post.author.name}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <div className="text-sm">
-                        <p className="font-medium">{post.author.name}</p>
-                        <p className="text-gray-400">{post.date}</p>
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto"
+              />
+            </div>
+          ) : (
+            <>
+              {/* Featured Post */}
+              {filteredPosts.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-16"
+                >
+                  <div className="glass-card overflow-hidden">
+                    <div className="grid grid-cols-1 lg:grid-cols-2">
+                      <div className="relative h-64 lg:h-auto">
+                        <img
+                          src={filteredPosts[0].image}
+                          alt={filteredPosts[0].title}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-8 lg:p-12">
+                        <span className="text-primary text-sm font-semibold">{filteredPosts[0].category}</span>
+                        <h2 className="text-2xl sm:text-3xl font-bold mt-2 mb-4">{filteredPosts[0].title}</h2>
+                        <p className="text-gray-400 mb-6">{filteredPosts[0].excerpt}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <img
+                              src={filteredPosts[0].author.avatar}
+                              alt={filteredPosts[0].author.name}
+                              className="w-10 h-10 rounded-full"
+                            />
+                            <div>
+                              <p className="font-medium">{filteredPosts[0].author.name}</p>
+                              <p className="text-sm text-gray-400">{filteredPosts[0].author.role}</p>
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            <p>{new Date(filteredPosts[0].date?.toDate()).toLocaleDateString()}</p>
+                            <p>{filteredPosts[0].readTime}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <span className="text-sm text-gray-400">{post.readTime}</span>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              )}
+
+              {/* Blog Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredPosts.slice(1).map((post, index) => (
+                  <motion.div
+                    key={post.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="glass-card overflow-hidden group"
+                  >
+                    <div className="relative h-48">
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                      <div className="absolute bottom-4 left-4">
+                        <span className="px-3 py-1 bg-primary/90 text-white text-xs font-medium rounded-full">
+                          {post.category}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold mb-2">{post.title}</h3>
+                      <p className="text-gray-400 text-sm mb-4">{post.excerpt}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <img
+                            src={post.author.avatar}
+                            alt={post.author.name}
+                            className="w-8 h-8 rounded-full"
+                          />
+                          <div className="text-sm">
+                            <p className="font-medium">{post.author.name}</p>
+                            <p className="text-gray-400">
+                              {new Date(post.date?.toDate()).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-sm text-gray-400">{post.readTime}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Newsletter */}
           <motion.div
