@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
+import { Link } from 'react-router-dom';
 
 interface BlogPost {
   id: string;
@@ -166,48 +167,49 @@ function Blog() {
               {/* Blog Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredPosts.slice(1).map((post, index) => (
-                  <motion.div
-                    key={post.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="glass-card overflow-hidden group"
-                  >
-                    <div className="relative h-48">
-                      <img
-                        src={post.image}
-                        alt={post.title}
-                        className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                      <div className="absolute bottom-4 left-4">
-                        <span className="px-3 py-1 bg-primary/90 text-white text-xs font-medium rounded-full">
-                          {post.category}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold mb-2">{post.title}</h3>
-                      <p className="text-gray-400 text-sm mb-4">{post.excerpt}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <img
-                            src={post.author.avatar}
-                            alt={post.author.name}
-                            className="w-8 h-8 rounded-full"
-                          />
-                          <div className="text-sm">
-                            <p className="font-medium">{post.author.name}</p>
-                            <p className="text-gray-400">
-                              {new Date(post.date?.toDate()).toLocaleDateString()}
-                            </p>
-                          </div>
+                  <Link to={`/blog/${post.id}`} key={post.id}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="glass-card overflow-hidden group"
+                    >
+                      <div className="relative h-48">
+                        <img
+                          src={post.image}
+                          alt={post.title}
+                          className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                        <div className="absolute bottom-4 left-4">
+                          <span className="px-3 py-1 bg-primary/90 text-white text-xs font-medium rounded-full">
+                            {post.category}
+                          </span>
                         </div>
-                        <span className="text-sm text-gray-400">{post.readTime}</span>
                       </div>
-                    </div>
-                  </motion.div>
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold mb-2">{post.title}</h3>
+                        <p className="text-gray-400 text-sm mb-4">{post.excerpt}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <img
+                              src={post.author.avatar}
+                              alt={post.author.name}
+                              className="w-8 h-8 rounded-full"
+                            />
+                            <div className="text-sm">
+                              <p className="font-medium">{post.author.name}</p>
+                              <p className="text-gray-400">
+                                {new Date(post.date?.toDate()).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-sm text-gray-400">{post.readTime}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </Link>
                 ))}
               </div>
             </>

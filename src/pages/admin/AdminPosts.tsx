@@ -6,6 +6,7 @@ import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Link, useNavigate } from 'react-router-dom';
 import { TableRowSkeleton } from '../../components/admin/SkeletonLoader';
 import { useAuth } from '../../hooks/useAuth';
+import CreatePostModal from '../../components/admin/CreatePostModal';
 
 interface BlogPost {
   id: string;
@@ -21,6 +22,7 @@ interface BlogPost {
 function AdminPosts() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -72,7 +74,7 @@ function AdminPosts() {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => navigate('/blog/admin/posts/create')}
+          onClick={() => setIsCreateModalOpen(true)}
           className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center space-x-2"
         >
           <PlusIcon className="w-5 h-5" />
@@ -139,6 +141,11 @@ function AdminPosts() {
           )}
         </div>
       </div>
+
+      <CreatePostModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </div>
   );
 }

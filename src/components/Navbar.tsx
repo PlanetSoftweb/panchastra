@@ -27,7 +27,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="fixed w-full z-50 top-0">
+      <nav className="fixed w-full z-navbar top-0">
         <div className="glass-card mx-2 my-2 sm:mx-4 sm:my-4">
           <div className="max-w-7xl mx-auto px-3 sm:px-4">
             <div className="flex justify-between h-12 sm:h-14 md:h-16 items-center">

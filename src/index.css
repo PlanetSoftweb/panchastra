@@ -38,6 +38,27 @@ body {
   border-radius: 1rem;
 }
 
+/* Z-index layers */
+.z-modal-backdrop {
+  z-index: 40;
+}
+
+.z-modal-content {
+  z-index: 50;
+}
+
+.z-navbar {
+  z-index: 30;
+}
+
+.z-chatbot {
+  z-index: 20;
+}
+
+.z-dropdown {
+  z-index: 10;
+}
+
 .hero-gradient {
   background: radial-gradient(circle at center, rgba(37, 99, 235, 0.15) 0%, rgba(10, 10, 10, 0) 70%);
 }

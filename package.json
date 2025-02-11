@@ -22,7 +22,13 @@
     "@tiptap/react": "^2.2.4",
     "@tiptap/pm": "^2.2.4",
     "@tiptap/starter-kit": "^2.2.4",
-    "@tiptap/extension-placeholder": "^2.2.4"
+    "@tiptap/extension-placeholder": "^2.2.4",
+    "@tiptap/extension-image": "^2.2.4",
+    "@tiptap/extension-text-align": "^2.2.4",
+    "@tiptap/extension-text-style": "^2.2.4",
+    "@tiptap/extension-font-family": "^2.2.4",
+    "imagekit": "^4.1.4",
+    "imagekit-javascript": "^2.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.8",
