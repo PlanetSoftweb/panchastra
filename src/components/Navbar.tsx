@@ -1,17 +1,25 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { XMarkIcon, Bars3Icon } from '@heroicons/react/24/outline';
+import { XMarkIcon, Bars3Icon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLaunching, setIsLaunching] = useState(false);
+  const [isCompanyOpen, setIsCompanyOpen] = useState(false);
   const navigate = useNavigate();
 
   const menuItems = [
     { path: '/', label: 'Home' },
     { path: '/products', label: 'Products' },
-    { path: '/team', label: 'Team' },
+    {
+      label: 'Company',
+      children: [
+        { path: '/about', label: 'About Us' },
+        { path: '/careers', label: 'Careers' },
+        { path: '/team', label: 'Team' }
+      ]
+    },
     { path: '/blog', label: 'Blog' },
     { path: '/contact', label: 'Contact' }
   ];
@@ -118,17 +126,62 @@ function Navbar() {
               <div className="flex flex-col items-center justify-center flex-grow gap-6 sm:gap-8">
                 {menuItems.map((item) => (
                   <motion.div
-                    key={item.path}
+                    key={item.label}
                     variants={itemVariants}
                     className="overflow-hidden"
                   >
-                    <Link
-                      to={item.path}
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold title-font text-white hover:text-primary transition-colors"
-                    >
-                      {item.label}
-                    </Link>
+                    {item.children ? (
+                      <div className="text-center">
+                        <motion.button
+                          onClick={() => setIsCompanyOpen(!isCompanyOpen)}
+                          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold title-font text-white hover:text-primary transition-colors flex items-center gap-2 mx-auto"
+                        >
+                          {item.label}
+                          <motion.div
+                            animate={{ rotate: isCompanyOpen ? 180 : 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <ChevronDownIcon className="w-8 h-8" />
+                          </motion.div>
+                        </motion.button>
+                        <AnimatePresence>
+                          {isCompanyOpen && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.3 }}
+                              className="flex flex-col gap-4 mt-6 overflow-hidden"
+                            >
+                              {item.children.map((child) => (
+                                <motion.div
+                                  key={child.path}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  exit={{ opacity: 0, x: -20 }}
+                                >
+                                  <Link
+                                    to={child.path}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="text-xl sm:text-2xl md:text-3xl text-gray-400 hover:text-primary transition-colors"
+                                  >
+                                    {child.label}
+                                  </Link>
+                                </motion.div>
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ) : (
+                      <Link
+                        to={item.path}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold title-font text-white hover:text-primary transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    )}
                   </motion.div>
                 ))}
                 

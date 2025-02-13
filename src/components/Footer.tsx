@@ -10,22 +10,22 @@ function Footer() {
       { label: 'Contact', path: '/contact' }
     ],
     products: [
-      { label: 'AR Suite', path: '/products' },
-      { label: 'VR Studio', path: '/products' },
-      { label: 'AI Assistant', path: '/products' },
-      { label: 'Collaboration Hub', path: '/products' }
+      { label: 'AR Suite', path: '/products#ar-suite' },
+      { label: 'VR Studio', path: '/products#vr-studio' },
+      { label: 'AI Assistant', path: '/products#ai-assistant' },
+      { label: 'Collaboration Hub', path: '/products#collaboration-hub' }
     ],
     resources: [
       { label: 'Documentation', path: '#' },
-      { label: 'Blog', path: '#' },
+      { label: 'Blog', path: '/blog' },
       { label: 'Case Studies', path: '#' },
       { label: 'Support', path: '#' }
     ],
     legal: [
-      { label: 'Privacy Policy', path: '#' },
-      { label: 'Terms of Service', path: '#' },
-      { label: 'Cookie Policy', path: '#' },
-      { label: 'GDPR', path: '#' }
+      { label: 'Privacy Policy', path: '/privacy-policy' },
+      { label: 'Terms of Service', path: '/terms-of-service' },
+      { label: 'Cookie Policy', path: '/cookie-policy' },
+      { label: 'GDPR', path: '/gdpr' }
     ]
   };
 
@@ -40,7 +40,7 @@ function Footer() {
     <footer className="bg-black/90 text-white border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="py-8 sm:py-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="py-8 sm:py-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <motion.div

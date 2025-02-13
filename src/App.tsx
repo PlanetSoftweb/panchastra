@@ -14,8 +14,14 @@ import BlogAdmin from './pages/BlogAdmin';
 import NotFound from './pages/NotFound';
 import Preloader from './components/Preloader';
 import ChatBot from './components/ChatBot';
+import MusicToggle from './components/MusicToggle';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
+import GDPR from './pages/GDPR';
+import AboutUs from './pages/AboutUs';
+import Careers from './pages/Careers';
 
-// Scroll restoration component
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -42,10 +48,8 @@ function App() {
           {loading && <Preloader />}
         </AnimatePresence>
         
-        {/* Add ScrollToTop component */}
         <ScrollToTop />
         
-        {/* Only show Navbar if not in admin routes */}
         <Routes>
           <Route path="/blog/admin/*" element={null} />
           <Route path="*" element={<Navbar />} />
@@ -61,19 +65,24 @@ function App() {
             <Route path="/blog/:id" element={<BlogPost />} />
             <Route path="/blog/admin/*" element={<BlogAdmin />} />
             <Route path="/launch-app" element={<LaunchApp />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
+            <Route path="/gdpr" element={<GDPR />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/careers" element={<Careers />} />
             <Route path="/404" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>
         </main>
 
-        {/* Only show Footer if not in admin routes */}
         <Routes>
           <Route path="/blog/admin/*" element={null} />
           <Route path="*" element={<Footer />} />
         </Routes>
 
-        {/* ChatBot */}
         <ChatBot />
+        <MusicToggle />
       </div>
     </Router>
   );

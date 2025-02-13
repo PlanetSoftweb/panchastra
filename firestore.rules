@@ -18,6 +18,24 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Waitlist rules - Allow admin to read, anyone to create
+    match /waitlist/{entryId} {
+      // Anyone can create waitlist entries
+      allow create: if true;
+      
+      // Admin can read waitlist entries
+      allow read: if isAuthenticated();
+    }
+
+    // Stats rules
+    match /stats/{statId} {
+      // Anyone can read stats
+      allow read: if true;
+      
+      // Admin can write to stats
+      allow write: if isAdmin();
+    }
+
     // Blog posts rules
     match /blogs/{blogId} {
       // Anyone can read blog posts

@@ -1,20 +1,19 @@
-import ImageKit from "imagekit-javascript";
-
-// Initialize ImageKit
-export const imagekit = new ImageKit({
-  publicKey: "public_HH6Ju26d0J1+j5Nuy/usQddQ6vc=",
-  urlEndpoint: "https://ik.imagekit.io/9cvcezqvw",
-  authenticationEndpoint: "https://your-server.com/auth" // You'll need a server endpoint for authentication
-});
-
 export const uploadImage = async (file: File): Promise<string> => {
   try {
-    const response = await imagekit.upload({
-      file,
-      fileName: file.name,
-      folder: "/blog-posts"
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=6eed668e740ddd4492a00a7e17e7fbbb`, {
+      method: 'POST',
+      body: formData
     });
-    return response.url;
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.error?.message || 'Failed to upload image');
+    }
+
+    return data.data.url;
   } catch (error) {
     console.error('Error uploading image:', error);
     throw error;

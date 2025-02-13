@@ -5,7 +5,8 @@ import {
   HomeIcon,
   DocumentTextIcon,
   FolderIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
+  UserGroupIcon
 } from '@heroicons/react/24/outline';
 import { SidebarSkeleton } from './SkeletonLoader';
 
@@ -13,6 +14,7 @@ const menuItems = [
   { path: '/blog/admin', icon: HomeIcon, label: 'Dashboard' },
   { path: '/blog/admin/posts', icon: DocumentTextIcon, label: 'Posts' },
   { path: '/blog/admin/categories', icon: FolderIcon, label: 'Categories' },
+  { path: '/blog/admin/waitlist', icon: UserGroupIcon, label: 'Waitlist' },
   { path: '/blog/admin/settings', icon: Cog6ToothIcon, label: 'Settings' }
 ];
 

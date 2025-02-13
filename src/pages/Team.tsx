@@ -5,49 +5,37 @@ const teamMembers = [
   {
     name: 'KD',
     role: 'Founder & CEO',
-    description: 'Visionary leader with expertise in AR/VR technology and architectural innovation.',
-    skills: ['AR/VR Development', 'Business Strategy', 'Innovation Leadership'],
-    achievements: ['Forbes 30 Under 30', '10+ Years in Tech', 'Multiple Patents'],
+    description: 'Visionary leader with expertise in AR/VR technology.',
     social: {
       linkedin: '#',
-      twitter: '#',
-      github: '#'
+      twitter: '#'
     }
   },
   {
     name: 'UG',
     role: 'Founder & CTO',
-    description: 'Technical genius behind our cutting-edge AR/VR solutions.',
-    skills: ['System Architecture', 'AI/ML', 'Cloud Infrastructure'],
-    achievements: ['PhD in Computer Science', '15+ Research Papers', 'Tech Innovation Award'],
+    description: 'Technical genius behind our cutting-edge solutions.',
     social: {
       linkedin: '#',
-      twitter: '#',
-      github: '#'
+      twitter: '#'
     }
   },
   {
     name: 'BR',
     role: 'Founder & COO',
-    description: 'Operations mastermind ensuring smooth delivery of our solutions.',
-    skills: ['Operations Management', 'Project Planning', 'Team Leadership'],
-    achievements: ['MBA from IIM', 'Scaled 3 Startups', 'Excellence in Operations'],
+    description: 'Operations mastermind ensuring smooth delivery.',
     social: {
       linkedin: '#',
-      twitter: '#',
-      github: '#'
+      twitter: '#'
     }
   },
   {
     name: 'KS',
     role: 'Founder & Creative Director',
-    description: 'Creative force driving the artistic vision of our platform.',
-    skills: ['UI/UX Design', '3D Modeling', 'Creative Direction'],
-    achievements: ['Design Awards', 'Art Direction', 'Industry Recognition'],
+    description: 'Creative force driving our artistic vision.',
     social: {
       linkedin: '#',
-      twitter: '#',
-      github: '#'
+      twitter: '#'
     }
   }
 ];
@@ -102,7 +90,7 @@ function Team() {
               >
                 <div className="glass-card p-8 h-full hover:bg-white/5 transition-all duration-300">
                   {/* Profile Section */}
-                  <div className="text-center mb-6">
+                  <div className="text-center">
                     <div className="w-32 h-32 mx-auto mb-6 relative">
                       <div className="absolute inset-0 bg-primary/20 rounded-full animate-pulse"></div>
                       <div className="relative w-full h-full bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary group-hover:scale-110 transition-transform duration-300">
@@ -114,49 +102,21 @@ function Team() {
                     <h3 className="text-2xl font-bold mb-2">{member.name}</h3>
                     <p className="text-primary font-medium mb-4">{member.role}</p>
                     <p className="text-gray-400 text-sm mb-6">{member.description}</p>
-                  </div>
 
-                  {/* Skills */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-gray-300 mb-3">EXPERTISE</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {member.skills.map((skill) => (
-                        <span
-                          key={skill}
-                          className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary"
+                    {/* Social Links */}
+                    <div className="flex justify-center space-x-4">
+                      {Object.entries(member.social).map(([platform, url]) => (
+                        <motion.a
+                          key={platform}
+                          href={url}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
                         >
-                          {skill}
-                        </span>
+                          <span className="capitalize text-sm">{platform[0]}</span>
+                        </motion.a>
                       ))}
                     </div>
-                  </div>
-
-                  {/* Achievements */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-gray-300 mb-3">ACHIEVEMENTS</h4>
-                    <ul className="text-sm text-gray-400 space-y-2">
-                      {member.achievements.map((achievement) => (
-                        <li key={achievement} className="flex items-center">
-                          <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2"></span>
-                          {achievement}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Social Links */}
-                  <div className="flex justify-center space-x-4">
-                    {Object.entries(member.social).map(([platform, url]) => (
-                      <motion.a
-                        key={platform}
-                        href={url}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-                      >
-                        <span className="capitalize text-sm">{platform[0]}</span>
-                      </motion.a>
-                    ))}
                   </div>
                 </div>
               </motion.div>
@@ -199,7 +159,7 @@ function Team() {
             <h2 className="text-3xl font-bold title-font mb-6">Join Our Journey</h2>
             <p className="text-gray-400 max-w-2xl mx-auto mb-8">
               We're always looking for talented individuals who share our vision of revolutionizing
-              architectural visualization through technology. Join us in shaping the future.
+              architectural visualization through technology.
             </p>
             <motion.div
               whileHover={{ scale: 1.05 }}

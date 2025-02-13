@@ -1,19 +1,117 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { collection, addDoc, getDocs, getDoc, doc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 function LaunchApp() {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [counter, setCounter] = useState(994);
+  const [submittedEmail, setSubmittedEmail] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    // Fetch current counter value
+    const fetchCounter = async () => {
+      const counterDoc = await getDoc(doc(db, 'stats', 'waitlist'));
+      if (counterDoc.exists()) {
+        setCounter(counterDoc.data().count);
+      }
+    };
+    fetchCounter();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      // Add email to waitlist collection
+      await addDoc(collection(db, 'waitlist'), {
+        email,
+        timestamp: new Date()
+      });
+
+      // Update counter in stats collection
+      const newCount = counter + 1;
+      await setDoc(doc(db, 'stats', 'waitlist'), {
+        count: newCount
+      });
+
+      setCounter(newCount);
+      setSubmittedEmail(email);
       setIsSubmitted(true);
       setEmail('');
-    }, 1500);
+    } catch (error) {
+      console.error('Error adding to waitlist:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Binary Rain Effect Component
+  const BinaryRain = () => {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-primary/20 text-xs whitespace-nowrap"
+            initial={{ y: -100, x: Math.random() * window.innerWidth }}
+            animate={{
+              y: window.innerHeight + 100,
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: 5 + Math.random() * 5,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+              ease: "linear"
+            }}
+          >
+            {[...Array(10)].map(() => Math.round(Math.random())).join('')}
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
+  // Confetti Effect Component
+  const Confetti = () => {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(50)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2"
+            initial={{
+              top: '50%',
+              left: '50%',
+              scale: 0,
+              opacity: 1,
+            }}
+            animate={{
+              top: ['50%', `${Math.random() * 100}%`],
+              left: ['50%', `${Math.random() * 100}%`],
+              scale: [0, 1],
+              opacity: [1, 0],
+            }}
+            transition={{
+              duration: 1.5,
+              ease: "easeOut",
+              delay: i * 0.02,
+            }}
+          >
+            <div
+              className="w-full h-full rotate-45"
+              style={{
+                backgroundColor: ['#2563eb', '#1d4ed8', '#3b82f6'][Math.floor(Math.random() * 3)],
+              }}
+            />
+          </motion.div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -23,7 +121,10 @@ function LaunchApp() {
       transition={{ duration: 0.5 }}
       className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden"
     >
-      {/* Aviation-themed Background Effects */}
+      {/* Binary Rain Background */}
+      <BinaryRain />
+
+      {/* Background Effects */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-transparent to-black" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
@@ -95,7 +196,6 @@ function LaunchApp() {
               }}
               className="relative w-full h-full flex items-center justify-center"
             >
-              {/* 3D Airplane Icon */}
               <svg
                 viewBox="0 0 24 24"
                 className="w-20 h-20 text-primary"
@@ -105,33 +205,11 @@ function LaunchApp() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                <path d="M14.05 2.05l-6.36 6.36"></path>
-                <path d="M8.59 8.59l6.36-6.36"></path>
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                <path d="M14.05 2.05l-6.36 6.36" />
+                <path d="M8.59 8.59l6.36-6.36" />
               </svg>
             </motion.div>
-            
-            {/* Contrail Effects */}
-            {[...Array(3)].map((_, i) => (
-              <motion.div
-                key={i}
-                animate={{
-                  x: [0, -100],
-                  opacity: [1, 0],
-                  scale: [1, 0]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: i * 0.3,
-                  ease: "easeOut"
-                }}
-                className="absolute top-1/2 right-0 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent"
-                style={{
-                  top: `${45 + i * 5}%`,
-                }}
-              />
-            ))}
           </div>
         </motion.div>
 
@@ -140,10 +218,36 @@ function LaunchApp() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="glass-card p-8 backdrop-blur-xl"
+          className="glass-card p-8 backdrop-blur-xl relative overflow-hidden"
         >
+          {/* Cyber Security Background Animation */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent" />
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute bg-primary/10"
+                style={{
+                  width: Math.random() * 100 + 'px',
+                  height: '1px',
+                  left: Math.random() * 100 + '%',
+                  top: Math.random() * 100 + '%',
+                }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  scale: [1, 2, 1],
+                }}
+                transition={{
+                  duration: 2 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
+          </div>
+
           <motion.h1 
-            className="text-4xl md:text-5xl font-bold title-font mb-6 text-white"
+            className="text-4xl md:text-5xl font-bold title-font mb-6 text-white relative z-10"
             animate={{ 
               textShadow: ["0 0 10px rgba(37, 99, 235, 0)", "0 0 20px rgba(37, 99, 235, 0.5)", "0 0 10px rgba(37, 99, 235, 0)"]
             }}
@@ -157,11 +261,26 @@ function LaunchApp() {
           </motion.h1>
           
           <motion.p 
-            className="text-xl text-gray-300 mb-8"
+            className="text-xl text-gray-300 mb-4 relative z-10"
           >
             Our revolutionary platform is in final approach. 
-            Join the flight crew for early access!
+            Join {counter.toLocaleString()} others on the waitlist!
           </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-4xl font-bold text-primary mb-8 relative z-10"
+          >
+            {counter.toLocaleString()}
+            <span className="text-base text-gray-400 ml-2">Early Access Members</span>
+          </motion.div>
+
+          {/* Success Animation and Confetti */}
+          <AnimatePresence>
+            {isSubmitted && <Confetti />}
+          </AnimatePresence>
 
           {/* Notification Form */}
           <AnimatePresence mode="wait">
@@ -171,7 +290,7 @@ function LaunchApp() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 onSubmit={handleSubmit}
-                className="max-w-md mx-auto space-y-4"
+                className="max-w-md mx-auto space-y-4 relative z-10"
               >
                 <div className="relative">
                   <input
@@ -205,9 +324,46 @@ function LaunchApp() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-green-400 font-semibold"
+                className="relative z-10"
               >
-                Welcome aboard! We'll notify you when we're ready for takeoff.
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 20
+                  }}
+                  className="w-20 h-20 mx-auto mb-6 bg-green-500/20 rounded-full flex items-center justify-center"
+                >
+                  <svg
+                    className="w-10 h-10 text-green-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-center"
+                >
+                  <h2 className="text-2xl font-bold text-green-400 mb-2">
+                    Congratulations, {submittedEmail}!
+                  </h2>
+                  <p className="text-gray-300">
+                    You're now #{counter.toLocaleString()} on our waitlist.<br />
+                    Get ready for an extraordinary journey into the future of architecture!
+                  </p>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -217,7 +373,7 @@ function LaunchApp() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.1 }}
-            className="mt-12 grid grid-cols-2 gap-4"
+            className="mt-12 grid grid-cols-2 gap-4 relative z-10"
           >
             {[
               { icon: "plane", text: "Immersive AR/VR" },

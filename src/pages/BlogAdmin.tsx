@@ -7,6 +7,7 @@ import CreatePost from './admin/CreatePost';
 import EditPost from './admin/EditPost';
 import AdminCategories from './admin/AdminCategories';
 import AdminSettings from './admin/AdminSettings';
+import AdminWaitlist from './admin/AdminWaitlist';
 
 function BlogAdmin() {
   return (
@@ -17,6 +18,7 @@ function BlogAdmin() {
       <Route path="posts/create" element={<AdminLayout><CreatePost /></AdminLayout>} />
       <Route path="posts/edit/:id" element={<AdminLayout><EditPost /></AdminLayout>} />
       <Route path="categories" element={<AdminLayout><AdminCategories /></AdminLayout>} />
+      <Route path="waitlist" element={<AdminLayout><AdminWaitlist /></AdminLayout>} />
       <Route path="settings" element={<AdminLayout><AdminSettings /></AdminLayout>} />
       <Route path="*" element={<Navigate to="/blog/admin" replace />} />
     </Routes>

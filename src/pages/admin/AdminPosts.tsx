@@ -22,6 +22,7 @@ interface BlogPost {
 function AdminPosts() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -34,6 +35,7 @@ function AdminPosts() {
 
   const fetchPosts = async () => {
     try {
+      setError(null);
       const q = query(
         collection(db, 'blogs'), 
         where('author.id', '==', user?.uid),
@@ -45,10 +47,11 @@ function AdminPosts() {
         ...doc.data()
       })) as BlogPost[];
       setPosts(fetchedPosts);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching posts:', error);
+      setError(error.message || 'Error fetching posts. Please try again.');
     } finally {
-      setTimeout(() => setLoading(false), 1500);
+      setLoading(false);
     }
   };
 
@@ -57,8 +60,9 @@ function AdminPosts() {
       try {
         await deleteDoc(doc(db, 'blogs', id));
         setPosts(posts.filter(post => post.id !== id));
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error deleting post:', error);
+        alert('Error deleting post. Please try again.');
       }
     }
   };
@@ -66,6 +70,22 @@ function AdminPosts() {
   const handleEdit = (id: string) => {
     navigate(`/blog/admin/posts/edit/${id}`);
   };
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <div className="glass-card p-6 text-center">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button
+            onClick={fetchPosts}
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
