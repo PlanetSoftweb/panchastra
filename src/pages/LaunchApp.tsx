@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, addDoc, getDocs, getDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, getDoc, doc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
 function LaunchApp() {
@@ -13,9 +13,19 @@ function LaunchApp() {
   useEffect(() => {
     // Fetch current counter value
     const fetchCounter = async () => {
-      const counterDoc = await getDoc(doc(db, 'stats', 'waitlist'));
-      if (counterDoc.exists()) {
-        setCounter(counterDoc.data().count);
+      try {
+        const counterDoc = await getDoc(doc(db, 'stats', 'waitlist'));
+        if (counterDoc.exists()) {
+          setCounter(counterDoc.data().count || 994);
+        } else {
+          // Initialize counter document if it doesn't exist
+          await setDoc(doc(db, 'stats', 'waitlist'), {
+            count: 994,
+            lastUpdated: Timestamp.now()
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching counter:', error);
       }
     };
     fetchCounter();
@@ -29,13 +39,18 @@ function LaunchApp() {
       // Add email to waitlist collection
       await addDoc(collection(db, 'waitlist'), {
         email,
-        timestamp: new Date()
+        timestamp: Timestamp.now()
       });
 
+      // Get current counter value
+      const counterDoc = await getDoc(doc(db, 'stats', 'waitlist'));
+      const currentCount = counterDoc.exists() ? (counterDoc.data().count || 994) : 994;
+      const newCount = currentCount + 1;
+
       // Update counter in stats collection
-      const newCount = counter + 1;
       await setDoc(doc(db, 'stats', 'waitlist'), {
-        count: newCount
+        count: newCount,
+        lastUpdated: Timestamp.now()
       });
 
       setCounter(newCount);
@@ -47,33 +62,6 @@ function LaunchApp() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Binary Rain Effect Component
-  const BinaryRain = () => {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute text-primary/20 text-xs whitespace-nowrap"
-            initial={{ y: -100, x: Math.random() * window.innerWidth }}
-            animate={{
-              y: window.innerHeight + 100,
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 5 + Math.random() * 5,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-              ease: "linear"
-            }}
-          >
-            {[...Array(10)].map(() => Math.round(Math.random())).join('')}
-          </motion.div>
-        ))}
-      </div>
-    );
   };
 
   // Confetti Effect Component
@@ -108,6 +96,33 @@ function LaunchApp() {
                 backgroundColor: ['#2563eb', '#1d4ed8', '#3b82f6'][Math.floor(Math.random() * 3)],
               }}
             />
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
+  // Binary Rain Effect Component
+  const BinaryRain = () => {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-primary/20 text-xs whitespace-nowrap"
+            initial={{ y: -100, x: Math.random() * window.innerWidth }}
+            animate={{
+              y: window.innerHeight + 100,
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: 5 + Math.random() * 5,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+              ease: "linear"
+            }}
+          >
+            {[...Array(10)].map(() => Math.round(Math.random())).join('')}
           </motion.div>
         ))}
       </div>
@@ -357,7 +372,7 @@ function LaunchApp() {
                   className="text-center"
                 >
                   <h2 className="text-2xl font-bold text-green-400 mb-2">
-                    Congratulations, {submittedEmail}!
+                    Congratulations!
                   </h2>
                   <p className="text-gray-300">
                     You're now #{counter.toLocaleString()} on our waitlist.<br />

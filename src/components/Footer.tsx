@@ -40,62 +40,64 @@ function Footer() {
     <footer className="bg-black/90 text-white border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="py-8 sm:py-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
-          {/* Company Info */}
-          <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-lg sm:text-xl font-bold title-font mb-4 text-primary">Panchastra</h3>
-              <p className="text-sm text-gray-400 mb-4">
-                Revolutionizing real estate and architecture through AR/VR technology
-              </p>
-              <div className="flex flex-wrap gap-3 sm:gap-4">
-                {socialLinks.map((social) => (
-                  <motion.a
-                    key={social.name}
-                    href={social.url}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-                    title={social.name}
-                  >
-                    <span>{social.icon}</span>
-                  </motion.a>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Navigation Links */}
-          {Object.entries(footerSections).map(([title, links], index) => (
-            <motion.div
-              key={title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="hidden sm:block"
-            >
-              <h4 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
-                {title}
-              </h4>
-              <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      to={link.path}
-                      className="text-xs sm:text-sm text-gray-300 hover:text-primary transition-colors"
+        <div className="py-8 sm:py-12">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+            {/* Company Info */}
+            <div className="col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-1">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <h3 className="text-lg sm:text-xl font-bold title-font mb-4 text-primary">Panchastra</h3>
+                <p className="text-sm text-gray-400 mb-4">
+                  Revolutionizing real estate and architecture through AR/VR technology
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {socialLinks.map((social) => (
+                    <motion.a
+                      key={social.name}
+                      href={social.url}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                      title={social.name}
                     >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+                      <span>{social.icon}</span>
+                    </motion.a>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Navigation Links */}
+            {Object.entries(footerSections).map(([title, links], index) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="col-span-1"
+              >
+                <h4 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
+                  {title}
+                </h4>
+                <ul className="space-y-2">
+                  {links.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        to={link.path}
+                        className="text-xs sm:text-sm text-gray-300 hover:text-primary transition-colors block"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         {/* Newsletter Section */}
@@ -106,7 +108,7 @@ function Footer() {
             viewport={{ once: true }}
             className="max-w-md mx-auto text-center"
           >
-            <h4 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Stay Updated</h4>
+            <h4 className="text-base sm:text-lg font-semibold mb-3">Stay Updated</h4>
             <p className="text-xs sm:text-sm text-gray-400 mb-4">
               Subscribe to our newsletter for the latest updates and innovations
             </p>
@@ -119,7 +121,7 @@ function Footer() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-4 sm:px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm"
+                className="px-4 sm:px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm whitespace-nowrap"
               >
                 Subscribe
               </motion.button>

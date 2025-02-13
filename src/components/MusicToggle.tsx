@@ -19,21 +19,41 @@ function MusicToggle() {
     // Handle audio loaded
     audioRef.current.addEventListener('canplaythrough', () => {
       setIsLoaded(true);
-      // Try to play audio
-      const playPromise = audioRef.current?.play();
-      if (playPromise) {
-        playPromise.catch(() => {
-          // Auto-play was prevented
-          setIsMuted(true);
-        });
+      // Try to play audio automatically
+      if (audioRef.current) {
+        const playPromise = audioRef.current.play();
+        if (playPromise) {
+          playPromise.catch((error) => {
+            console.log('Auto-play prevented:', error);
+            setIsMuted(true);
+          });
+        }
       }
     });
+    
+    // Add click event listener to document
+    const handleFirstInteraction = () => {
+      if (audioRef.current && isMuted) {
+        const playPromise = audioRef.current.play();
+        if (playPromise) {
+          playPromise.catch((error) => {
+            console.log('Play prevented:', error);
+          });
+        }
+        setIsMuted(false);
+      }
+      // Remove the event listener after first interaction
+      document.removeEventListener('click', handleFirstInteraction);
+    };
+
+    document.addEventListener('click', handleFirstInteraction);
     
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
+      document.removeEventListener('click', handleFirstInteraction);
     };
   }, []);
 
@@ -42,8 +62,8 @@ function MusicToggle() {
       if (isMuted) {
         const playPromise = audioRef.current.play();
         if (playPromise) {
-          playPromise.catch(() => {
-            setIsMuted(true);
+          playPromise.catch((error) => {
+            console.log('Play prevented:', error);
           });
         }
       } else {

@@ -18,7 +18,7 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Waitlist rules - Allow admin to read, anyone to create
+    // Waitlist rules - Allow anyone to create, admin to read
     match /waitlist/{entryId} {
       // Anyone can create waitlist entries
       allow create: if true;
@@ -27,13 +27,13 @@ service cloud.firestore {
       allow read: if isAuthenticated();
     }
 
-    // Stats rules
+    // Stats rules - Allow public read for counter, admin write
     match /stats/{statId} {
-      // Anyone can read stats
+      // Anyone can read stats (for the counter)
       allow read: if true;
       
-      // Admin can write to stats
-      allow write: if isAdmin();
+      // Allow public write to waitlist counter
+      allow write: if statId == 'waitlist';
     }
 
     // Blog posts rules
